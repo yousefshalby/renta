@@ -119,3 +119,5 @@ media/
 mysql_db/
 .env
 env 
+
+static

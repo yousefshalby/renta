@@ -28,6 +28,7 @@ AUTHENTICATION_BACKENDS = ["django.contrib.auth.backends.AllowAllUsersModelBacke
 
 
 INSTALLED_APPS = [
+    "modeltranslation",
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -41,14 +42,15 @@ INSTALLED_APPS = [
     "corsheaders",
     "import_export",
     "django_filters",
-    # all auth
     "drf_yasg",
+    "solo",
 ]
 
 MIDDLEWARE = [
     "corsheaders.middleware.CorsMiddleware",
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    "django.middleware.locale.LocaleMiddleware",
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
@@ -126,8 +128,7 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.1/howto/static-files/
 
-STATIC_URL = 'static/'
-
+STATIC_URL = '/static/'
 STATIC_ROOT = 'static'
 
 MEDIA_URL = '/media/'

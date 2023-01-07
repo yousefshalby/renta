@@ -7,6 +7,18 @@ from django.contrib.auth.models import AbstractUser, UserManager
 from django.utils.translation import ugettext_lazy as _
 from project.model_mixin import ContactUsMixin
 
+class Area(models.Model):
+    name = models.CharField(max_length=50)
+
+    def __str__(self):
+        return f"{self.name}"
+
+class PropertyType(models.Model):
+    name = models.CharField(max_length=50)
+
+    def __str__(self):
+        return f"{self.name}"
+
 
 # Create your models here.
 class Properties(models.Model):
@@ -15,14 +27,16 @@ class Properties(models.Model):
     description = models.TextField(max_length=1000, blank=True, null=True, default="",
                                    help_text="description of property",
                                    )
-    area = models.CharField(max_length=500, blank=True, null=True)
+    area = models.ForeignKey(Area, on_delete=models.CASCADE, related_name='property_area', blank=True, null=True)
+    
     Bedrooms = models.PositiveIntegerField(blank=True, null=True)
     Bathrooms = models.PositiveIntegerField(blank=True, null=True)
     listing_date = models.CharField(max_length=500, blank=True, null=True)
-    price = models.CharField(max_length=500, blank=True, null=True)
-    phone = models.CharField(max_length=500, blank=True, null=True)
-    property_type = models.CharField(max_length=500, blank=True, null=True)
-
+    price = models.IntegerField(blank=True, null=True)
+    property_type = models.ForeignKey(PropertyType, on_delete=models.CASCADE, related_name='property_type', blank=True, null=True)
+    latitude = models.DecimalField(max_digits=20, decimal_places=10, default=00.00)
+    longitude = models.DecimalField(max_digits=20, decimal_places=10, default=00.00)
+    
     def __str__(self):
         return self.title
 
@@ -32,8 +46,8 @@ class ContactInfo(SingletonModel):
     contact_no = models.CharField(max_length=12)
     find_us = models.CharField(max_length=250)
     
-    def __str__(self):
-        return "Contact Info"
+    # def __str__(self):
+    #     return "Contact Info"
 
     class Meta:
         verbose_name = "Contact Information"
@@ -92,13 +106,11 @@ class AboutUs(SingletonModel):
         help_text="description of forth paragraph in about us page",
     )
     
-
-    def __str__(self):
-        return "About Us"
+    # def __str__(self):
+    #     return "About Us"
 
     class Meta:
         verbose_name = "About Us"
-    
     
 class CustomUserManager(UserManager):
     def create_superuser(self, username, email=None, password=None, **extra_fields):
@@ -134,3 +146,21 @@ class User(CustomModel, AbstractUser):
     EMAIL_FIELD = "email"
     USERNAME_FIELD = "email"
     REQUIRED_FIELDS = ["username"]
+    
+    
+class UserContract(models.Model):
+    renter_name = models.CharField(max_length=50, blank=True, null=True)
+    contract_start = models.DateTimeField(blank=True, null=True)
+    contract_end = models.DateTimeField(blank=True, null=True)
+    rent_amount_per_month = models.IntegerField(blank=True, null=True)
+    contract_photo = models.ImageField(
+        upload_to=partial(file_upload, "contract_photo"), null=True, blank=True
+    )
+    renter_id_photo = models.ImageField(
+        upload_to=partial(file_upload, "renter_id_photo"), null=True, blank=True
+    )
+    
+    property_id = models.ForeignKey(Properties, on_delete=models.CASCADE, related_name="contact_property", blank=True, null=True)
+    
+    def __str__(self) -> str:
+        return self.renter_name
